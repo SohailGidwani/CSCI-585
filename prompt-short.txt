@@ -1,0 +1,9 @@
+Design an ER diagram for a new dental practice and output it as Mermaid erDiagram code.
+
+Model: staff (front office, hygienists, dentists, periodontists, endodontists, orthodontists, surgeons) on monthly salaries, where medical professionals have licenses with expiration dates to track; patients with medical records of procedures, treatments and surgeries; appointments that book one of 8 rooms for a doctor and a patient; each patient's scheduling state (contacted, scheduled, recently visited, up for next visit, dormant); insurance providers, patient policies (subscriber ID, coverage type, coverage amount), and claims (CDT treatment code, treatment date, amount billed, amount paid); invoices and payments showing amount owed, paid by insurance, and paid by patient; a $300,000 bank loan repaid in installments over 10 years; a monthly building lease; monthly supply orders from vendors; and monthly operating expenses.
+
+Rules: give every entity a PK and mark FKs; no entity may be left without a relationship; resolve many-to-many relationships with an associative entity.
+
+Output ONE fenced code block with only Mermaid erDiagram code, then three dashes, then a short bulleted list of your assumptions.
+
+Mermaid syntax: first line is erDiagram. Relationships look like CUSTOMER ||--o{ ORDER : places. Attribute blocks look like ENTITY { then lines of "type name PK" then }. Types must be plain words like string, int, decimal, date, datetime, boolean. Never use parentheses, commas, spaces or hyphens in any name or type.

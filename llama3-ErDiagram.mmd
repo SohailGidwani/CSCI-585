@@ -1,0 +1,85 @@
+erDiagram
+class FINANCING {
+  PK loan_id int
+  loan_amount decimal
+  loan_term int
+  loan_installment_frequency string
+  PK startup_costs string
+}
+class STAFF {
+  PK staff_id int
+  staff_type string PK
+  salary decimal
+  license_number string FK
+  issue_date date
+  expiration_date date
+  renewal_status string
+}
+class MEDICAL_PROFESSIONAL {
+  PK medical_professional_id int
+  staff_id int FK
+  license_number string PK
+  issue_date date FK
+  expiration_date date FK
+  renewal_status string FK
+}
+class PATIENT {
+  PK patient_id int
+  medical_record_id int FK
+  billing_record_id int FK
+}
+class BILLING_RECORD {
+  PK billing_record_id int
+  patient_id int FK
+  insurance_provider_name string
+  insurance_subscriber_id string
+  coverage_type string
+  amount_owed decimal
+  amount_paid_by_insurance decimal
+  amount_paid_by_patient decimal
+}
+class INSURANCE_PROVIDER {
+  PK insurance_provider_id int
+  name string
+}
+class SCHEDULING {
+  PK scheduling_id int
+  patient_id int FK
+  doctor_id int FK
+  room_id int FK
+  date datetime
+  time datetime
+}
+class ROOM {
+  PK room_id int
+  name string
+}
+class PROCEDURE_CODE {
+  PK procedure_code_id int
+  code string
+}
+class INSURANCE_CLAIM {
+  PK insurance_claim_id int
+  billing_record_id int FK
+  procedure_code_id int FK
+  date datetime
+  amount decimal
+  amount_paid decimal
+}
+class FACILITIES {
+  PK facilities_id int
+  lease_id int FK
+}
+class LEASE {
+  PK lease_id int
+  facility_id int FK
+  lease_start_date date
+  lease_end_date date
+  lease_payment decimal
+}
+class REPORTING {
+  PK reporting_id int
+  day_schedule string
+  end_of_day_income decimal
+  monthly_expenditure_vs_income decimal
+}

@@ -1,0 +1,39 @@
+Below, under DIAGRAM TO CORRECT, is a draft ER diagram for a dental practice. It uses the wrong syntax and cannot be rendered. Rewrite it, keeping its entities and attributes, but fixing these three things.
+
+FIX 1. The draft writes "class FINANCING {". The word "class" belongs to Mermaid class diagrams, not ER diagrams, and it is a parse error here. An entity block starts with just the entity name:
+
+    FINANCING {
+
+FIX 2. The draft writes attributes as "PK loan_id int". The order is wrong. In Mermaid, the type comes first, then the name, then an optional PK or FK marker at the end:
+
+    int loan_id PK
+    decimal loan_amount
+    int staff_id FK
+
+FIX 3. The draft has no relationship lines at all, so it is not an ER diagram, just a list of tables. After all the entity blocks you must add relationship lines in this form:
+
+    PATIENT ||--o{ APPOINTMENT : books
+    MEDICAL_PROFESSIONAL ||--o{ APPOINTMENT : serves
+
+Every entity you define must appear in at least one relationship line. Use || for exactly one, o{ for zero or more, |{ for one or more. The label after the colon must be a single word, or in double quotes if it has spaces.
+
+Here is a complete, correct, minimal example of the format you must produce:
+
+erDiagram
+    CUSTOMER {
+        int customer_id PK
+        string name
+    }
+    ORDER {
+        int order_id PK
+        int customer_id FK
+        date order_date
+    }
+    CUSTOMER ||--o{ ORDER : places
+
+Now rewrite the dental practice ER diagram below in that exact format. Also add these three entities, which the draft is missing: FRONT_OFFICE_STAFF, MEDICAL_RECORD, and a lookup entity for the five patient scheduling states (contacted, scheduled, recently visited, up for next visit, dormant).
+
+Output ONE fenced code block containing only the corrected diagram, then three dashes, then your design decisions.
+
+DIAGRAM TO CORRECT:
+

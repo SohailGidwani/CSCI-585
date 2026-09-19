@@ -1,0 +1,301 @@
+```mermaid
+erDiagram
+    direction TB
+
+    EMPLOYEE ||--o| MEDICAL_PROFESSIONAL : specializes_as
+    EMPLOYEE ||--o| FRONT_OFFICE_STAFF : specializes_as
+    MEDICAL_PROFESSIONAL ||--|{ PROFESSIONAL_LICENSE : holds
+    EMPLOYEE ||--o{ PAYROLL_ENTRY : earns
+
+    SCHEDULING_STATE ||--o{ PATIENT : classifies
+    PATIENT ||--o{ PATIENT_CONTACT : receives
+    FRONT_OFFICE_STAFF ||--o{ PATIENT_CONTACT : records
+    FACILITY ||--|{ ROOM : contains
+    FACILITY ||--o{ LEASE : has
+    PATIENT ||--o{ APPOINTMENT : attends
+    MEDICAL_PROFESSIONAL ||--o{ APPOINTMENT : is_scheduled_for
+    FRONT_OFFICE_STAFF ||--o{ APPOINTMENT : schedules
+    ROOM ||--o{ APPOINTMENT : hosts
+
+    APPOINTMENT ||--o{ PERFORMED_SERVICE : includes
+    MEDICAL_PROFESSIONAL ||--o{ PERFORMED_SERVICE : performs
+    SERVICE_TYPE ||--o{ PERFORMED_SERVICE : classifies
+    PATIENT ||--o{ PATIENT_COVERAGE : holds
+    INSURANCE_PROVIDER ||--o{ PATIENT_COVERAGE : underwrites
+    PATIENT_COVERAGE ||--o{ INSURANCE_CLAIM : applies_to
+    PERFORMED_SERVICE ||--o{ INSURANCE_CLAIM : supports
+    PATIENT ||--o{ PAYMENT : has
+    INSURANCE_PROVIDER |o--o{ PAYMENT : remits
+    PAYMENT ||--|{ PAYMENT_ALLOCATION : comprises
+    PERFORMED_SERVICE ||--o{ PAYMENT_ALLOCATION : receives
+    INSURANCE_CLAIM |o--o{ PAYMENT_ALLOCATION : explains
+
+    BANK ||--o{ LOAN : provides
+    LOAN ||--|{ LOAN_INSTALLMENT : schedules
+    LOAN_INSTALLMENT ||--o{ LOAN_PAYMENT : receives
+    COST_CATEGORY ||--o{ COST_ENTRY : classifies
+    COST_ENTRY ||--o{ COST_PAYMENT : receives
+    COST_ENTRY ||--o| PAYROLL_ENTRY : details
+    LEASE ||--|{ LEASE_CHARGE : schedules
+    COST_ENTRY ||--o| LEASE_CHARGE : details
+    COST_ENTRY ||--o| FIXED_ASSET : capitalizes
+
+    EMPLOYEE {
+        int employee_id PK
+        string full_name
+        date hired_on
+        date terminated_on
+        decimal monthly_salary
+    }
+
+    MEDICAL_PROFESSIONAL {
+        int medical_professional_id PK
+        int employee_id FK
+        string primary_profession
+    }
+
+    FRONT_OFFICE_STAFF {
+        int front_office_staff_id PK
+        int employee_id FK
+    }
+
+    PROFESSIONAL_LICENSE {
+        int license_id PK
+        int medical_professional_id FK
+        string issuing_state
+        string license_number
+        string license_type
+        date valid_from
+        date expires_on
+        string license_status
+        date verified_on
+    }
+
+    SCHEDULING_STATE {
+        int scheduling_state_id PK
+        string state_name UK
+    }
+
+    PATIENT {
+        int patient_id PK
+        int scheduling_state_id FK
+        string full_name
+        date date_of_birth
+        string phone
+        string email
+    }
+
+    PATIENT_CONTACT {
+        int contact_id PK
+        int patient_id FK
+        int front_office_staff_id FK
+        datetime contacted_at
+        string contact_method
+        string outcome
+    }
+
+    FACILITY {
+        int facility_id PK
+        string street_address
+        string state
+    }
+
+    ROOM {
+        int room_id PK
+        int facility_id FK
+        string room_number
+    }
+
+    APPOINTMENT {
+        int appointment_id PK
+        int patient_id FK
+        int scheduled_professional_id FK
+        int front_office_staff_id FK
+        int room_id FK
+        datetime starts_at
+        datetime ends_at
+        string appointment_status
+    }
+
+    SERVICE_TYPE {
+        int service_type_id PK
+        string cdt_code UK
+        string service_name
+        string service_kind
+    }
+
+    PERFORMED_SERVICE {
+        int performed_service_id PK
+        int appointment_id FK
+        int medical_professional_id FK
+        int service_type_id FK
+        datetime performed_at
+        decimal billed_amount
+        string clinical_indication
+        string clinical_notes
+    }
+
+    INSURANCE_PROVIDER {
+        int insurance_provider_id PK
+        string provider_name
+    }
+
+    PATIENT_COVERAGE {
+        int patient_coverage_id PK
+        int patient_id FK
+        int insurance_provider_id FK
+        string subscriber_id
+        string coverage_type
+        decimal coverage_amount
+        date effective_from
+        date effective_to
+    }
+
+    INSURANCE_CLAIM {
+        int insurance_claim_id PK
+        int performed_service_id FK
+        int patient_coverage_id FK
+        datetime submitted_at
+        decimal amount_claimed
+        string claim_status
+    }
+
+    PAYMENT {
+        int payment_id PK
+        int patient_id FK
+        int insurance_provider_id FK
+        string payer_type
+        datetime received_at
+        decimal amount
+        string payment_reference
+    }
+
+    PAYMENT_ALLOCATION {
+        int payment_allocation_id PK
+        int payment_id FK
+        int performed_service_id FK
+        int insurance_claim_id FK
+        decimal amount_applied
+    }
+
+    BANK {
+        int bank_id PK
+        string bank_name
+    }
+
+    LOAN {
+        int loan_id PK
+        int bank_id FK
+        decimal original_principal
+        decimal annual_interest_rate
+        date disbursed_on
+        int term_months
+    }
+
+    LOAN_INSTALLMENT {
+        int loan_installment_id PK
+        int loan_id FK
+        int installment_number
+        date interest_period_end
+        date due_on
+        decimal principal_due
+        decimal interest_due
+    }
+
+    LOAN_PAYMENT {
+        int loan_payment_id PK
+        int loan_installment_id FK
+        date paid_on
+        decimal principal_paid
+        decimal interest_paid
+    }
+
+    COST_CATEGORY {
+        int cost_category_id PK
+        string category_name UK
+        string accounting_treatment
+    }
+
+    COST_ENTRY {
+        int cost_entry_id PK
+        int cost_category_id FK
+        date recognized_on
+        date due_on
+        decimal amount
+        string cost_phase
+        string payee_name
+        string description
+    }
+
+    COST_PAYMENT {
+        int cost_payment_id PK
+        int cost_entry_id FK
+        date paid_on
+        decimal amount_paid
+    }
+
+    PAYROLL_ENTRY {
+        int payroll_entry_id PK
+        int employee_id FK
+        int cost_entry_id FK
+        date salary_month
+    }
+
+    LEASE {
+        int lease_id PK
+        int facility_id FK
+        string landlord_name
+        date starts_on
+        date ends_on
+        decimal monthly_rent
+    }
+
+    LEASE_CHARGE {
+        int lease_charge_id PK
+        int lease_id FK
+        int cost_entry_id FK
+        date rent_month
+    }
+
+    FIXED_ASSET {
+        int fixed_asset_id PK
+        int cost_entry_id FK
+        string asset_name
+        date in_service_on
+        int useful_life_months
+        decimal residual_value
+    }
+```
+
+---
+
+### Design decisions
+
+* **Scope and scale.** This models one practice operating in one leased facility, initially containing eight room records. Approximately 100 patients is a planning estimate, not a database limit. All monetary amounts are assumed to be USD. Owners and the nearby hospital need no separate entities for the stated requirements.
+
+* **Staff specialization.** Every employee belongs to exactly one subtype: `MEDICAL_PROFESSIONAL` or `FRONT_OFFICE_STAFF`. The specialization is total and disjoint. Each subtype’s `employee_id` must be unique, enforcing the depicted 1:1 relationship. `primary_profession` distinguishes hygienists, dentists, periodontists, endodontists, orthodontists, and dental surgeons; one primary profession per professional is assumed.
+
+* **Licensure and salary.** Only medical professionals have license records. Separate license rows represent different licenses or renewal periods; state, status, validity dates, and verification date support compliance checks. Providing care requires an appropriate active, unexpired license. All employees have monthly salaries; historical salary amounts are preserved through payroll cost entries. Hourly rates and overtime are omitted.
+
+* **Scheduling and contact history.** Every appointment identifies exactly one patient, scheduled professional, room, and scheduling front office worker. Active appointments must not overlap for the same room, professional, or patient. Contact attempts are separate because contacting a patient need not produce an appointment. The state lookup contains exactly **contacted, scheduled, recently visited, up for next visit, dormant**; each patient has exactly one current state. Appointment status is separate from patient scheduling state.
+
+* **Medical records and charges.** Procedures, treatments, and surgeries share `SERVICE_TYPE`, distinguished by `service_kind`. `PERFORMED_SERVICE` records each completed occurrence, its clinical indication—such as gum disease—and its billable amount. The actual performer is recorded separately from the scheduled professional. Each occurrence has one responsible professional and one charge; a visit can contain multiple occurrences. The patient’s medical record is derived through appointments and performed services.
+
+* **Insurance coverage.** `PATIENT_COVERAGE` resolves the patient–provider many-to-many relationship and permits uninsured patients and multiple coverage records. Subscriber IDs are not assumed globally unique. `coverage_amount` means the monetary benefit limit for the stated coverage period; new periods or changed policies receive new records.
+
+* **Insurance claims.** Each claim bills one performed service against one coverage record. A service can have multiple claims. Subscriber ID, provider, CDT code, and treatment date are obtained through those relationships; only the submitted amount and submission details belong directly to the claim. Coverage must belong to the treated patient and apply on the service date. Multi-service submission envelopes are outside this initial scope.
+
+* **Payments and balances.** `PAYMENT_ALLOCATION` resolves the many-to-many relationship between incoming payments and service charges, supporting partial payments and payments covering several services. Each payment is for one patient account. Patient payments have no insurance provider or claim; insurer payments require both, with matching patient, provider, and service references. Allocations must total the payment and cannot overpay a charge. Account balance is total charges minus allocations; insurance-paid and patient-paid totals follow `payer_type`. Claim-paid totals come from allocations referencing that claim.
+
+* **Startup and recurring costs.** `COST_ENTRY` combines purchases and obligations, classified by category and startup/operating phase. Categories cover furniture, equipment, software, supplies, training, cleaning, utilities, and break-room food. Monthly supply restocks are recorded as cost entries. `COST_PAYMENT` separates recognition from settlement and supports partial payments. Supply quantities and inventory management are not included.
+
+* **Payroll and leasing.** `PAYROLL_ENTRY` and `LEASE_CHARGE` extend cost entries with employee/month and lease/month details. Enforce uniqueness for each employee/month and lease/month, and for `cost_entry_id` within each extension. A cost entry cannot simultaneously represent payroll, rent, and an asset acquisition. Monthly amounts remain historical snapshots even when current salary or lease terms change. Facility and lease are separate so lease renewals preserve room identity.
+
+* **Loan financing.** The initial loan stores a principal of **300,000** and a term of **120 months**. Monthly installments at a fixed contractual rate are assumed; the unspecified rate is stored when agreed. Scheduled obligations and actual payments are separate, with principal and interest distinguished. Each loan payment row applies to one installment, allowing partial settlements. Fees and early repayment adjustments are outside scope.
+
+* **Capital purchases.** `accounting_treatment` distinguishes operating expenses from capital acquisitions. Each capital cost entry has one `FIXED_ASSET` record with a unique `cost_entry_id`; purchases containing multiple assets are split into separate entries. Straight-line monthly depreciation is assumed, using acquisition cost, residual value, useful life, and in-service month. Supplies and training are assumed expensed when recognized.
+
+* **Reports and analytics.** The morning schedule comes from appointments joined to patients, professionals, and rooms. Daily billable income sums completed-service charges by `performed_at`, independently of claims and collections. Monthly cash flow uses incoming payments, cost payments, and loan payments, with loan proceeds identified separately. Monthly accrual profit uses service charges minus recognized operating costs, accrued loan interest, and depreciation; loan principal and capital purchases are excluded from expenses. Service mix, collections, scheduling utilization, and cost trends support later ROI analysis. Reports and aggregate balances are not stored.
+
+* **Integrity and remaining boundaries.** All 28 entities participate in relationships, every entity has exactly one marked PK, and no direct many-to-many relationship remains. Conditional rules, subtype exclusivity, uniqueness across multiple columns, and overlap prevention require database or application constraints beyond Mermaid. Separate invoice headers, treatment plans, tax accounting, refunds, write-offs, and full scheduling-state history are deliberately omitted from this initial design.
+

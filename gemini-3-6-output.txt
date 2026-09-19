@@ -1,0 +1,231 @@
+```mermaid
+erDiagram
+    LOAN {
+        int loan_id PK
+        string lender_name
+        decimal principal_amount
+        decimal interest_rate
+        int term_months
+        date start_date
+    }
+
+    LOAN_PAYMENT {
+        int payment_id PK
+        int loan_id FK
+        date payment_date
+        decimal amount_paid
+        decimal principal_portion
+        decimal interest_portion
+    }
+
+    STARTUP_COST {
+        int cost_id PK
+        int loan_id FK
+        string category
+        string description
+        decimal amount
+        date expense_date
+    }
+
+    STAFF {
+        int staff_id PK
+        string first_name
+        string last_name
+        string email
+        decimal monthly_salary
+        date hire_date
+    }
+
+    FRONT_OFFICE {
+        int staff_id PK FK
+        string desk_location
+    }
+
+    MEDICAL_PROFESSIONAL {
+        int staff_id PK FK
+        string specialty
+    }
+
+    LICENSE {
+        int license_id PK
+        int staff_id FK
+        string license_number
+        string state
+        date expiration_date
+        string status
+    }
+
+    PAYROLL_RECORD {
+        int payroll_id PK
+        int staff_id FK
+        date pay_date
+        decimal gross_amount
+        decimal net_amount
+    }
+
+    PATIENT {
+        int patient_id PK
+        string first_name
+        string last_name
+        date date_of_birth
+        string phone
+        string scheduling_state
+    }
+
+    INSURANCE_PROVIDER {
+        int provider_id PK
+        string provider_name
+        string phone_number
+    }
+
+    PATIENT_INSURANCE {
+        int patient_insurance_id PK
+        int patient_id FK
+        int provider_id FK
+        string subscriber_id
+        string coverage_type
+        decimal coverage_amount
+    }
+
+    ROOM {
+        int room_id PK
+        string room_number
+        string room_type
+    }
+
+    APPOINTMENT {
+        int appointment_id PK
+        int patient_id FK
+        int doctor_id FK
+        int room_id FK
+        int scheduled_by_id FK
+        datetime appointment_datetime
+        string status
+    }
+
+    CDT_CODE {
+        string cdt_code PK
+        string category
+        string description
+        decimal standard_fee
+    }
+
+    PATIENT_PROCEDURE {
+        int procedure_id PK
+        int appointment_id FK
+        string cdt_code FK
+        decimal fee_charged
+        string notes
+    }
+
+    INSURANCE_CLAIM {
+        int claim_id PK
+        int patient_insurance_id FK
+        int procedure_id FK
+        date claim_date
+        decimal amount_billed
+        decimal amount_paid
+        string claim_status
+    }
+
+    PATIENT_PAYMENT {
+        int payment_id PK
+        int patient_id FK
+        int appointment_id FK
+        date payment_date
+        decimal amount_paid
+        string payment_method
+    }
+
+    LEASE {
+        int lease_id PK
+        string property_address
+        decimal monthly_rent
+        date start_date
+        date end_date
+    }
+
+    LEASE_PAYMENT {
+        int lease_payment_id PK
+        int lease_id FK
+        date payment_date
+        decimal amount_paid
+    }
+
+    SUPPLY_ITEM {
+        int item_id PK
+        string item_name
+        string category
+        decimal unit_cost
+        int stock_quantity
+    }
+
+    SUPPLY_ORDER {
+        int order_id PK
+        int staff_id FK
+        date order_date
+        decimal total_cost
+    }
+
+    SUPPLY_ORDER_ITEM {
+        int order_item_id PK
+        int order_id FK
+        int item_id FK
+        int quantity
+        decimal unit_price
+    }
+
+    OPERATING_EXPENSE {
+        int expense_id PK
+        int staff_id FK
+        string category
+        string description
+        decimal amount
+        date expense_date
+    }
+
+    LOAN ||--o{ LOAN_PAYMENT : "has"
+    LOAN ||--o{ STARTUP_COST : "finances"
+    STAFF ||--o| FRONT_OFFICE : "is"
+    STAFF ||--o| MEDICAL_PROFESSIONAL : "is"
+    STAFF ||--o{ PAYROLL_RECORD : "receives"
+    STAFF ||--o{ SUPPLY_ORDER : "places"
+    STAFF ||--o{ OPERATING_EXPENSE : "logs"
+    MEDICAL_PROFESSIONAL ||--o{ LICENSE : "holds"
+    MEDICAL_PROFESSIONAL ||--o{ APPOINTMENT : "conducts"
+    FRONT_OFFICE ||--o{ APPOINTMENT : "schedules"
+    PATIENT ||--o{ PATIENT_INSURANCE : "has"
+    PATIENT ||--o{ APPOINTMENT : "attends"
+    PATIENT ||--o{ PATIENT_PAYMENT : "makes"
+    INSURANCE_PROVIDER ||--o{ PATIENT_INSURANCE : "issues"
+    PATIENT_INSURANCE ||--o{ INSURANCE_CLAIM : "claims"
+    ROOM ||--o{ APPOINTMENT : "hosts"
+    APPOINTMENT ||--o{ PATIENT_PROCEDURE : "includes"
+    APPOINTMENT ||--o{ PATIENT_PAYMENT : "settles"
+    CDT_CODE ||--o{ PATIENT_PROCEDURE : "defines"
+    PATIENT_PROCEDURE ||--o| INSURANCE_CLAIM : "generates"
+    LEASE ||--o{ LEASE_PAYMENT : "incurs"
+    SUPPLY_ORDER ||--|{ SUPPLY_ORDER_ITEM : "contains"
+    SUPPLY_ITEM ||--o{ SUPPLY_ORDER_ITEM : "included_in"
+
+```
+
+---
+
+## Design decisions
+
+* **Specialization/Generalization Strategy for Staff:** Created `STAFF` as a supertype containing common attributes (`monthly_salary`, personal info) and split role-specific logic into 1:1 subtypes `FRONT_OFFICE` and `MEDICAL_PROFESSIONAL`. `LICENSE` tracking is linked exclusively to `MEDICAL_PROFESSIONAL` to prevent non-medical personnel from having unnecessary license entries.
+* **M:N Relationship Resolutions:**
+* `PATIENT` and `INSURANCE_PROVIDER` are linked via `PATIENT_INSURANCE` (associative entity) to support patients carrying policy coverage from specific providers.
+* `APPOINTMENT` and `CDT_CODE` are linked via `PATIENT_PROCEDURE` to track multiple CDT-coded treatments/surgeries/cleanings performed during a single appointment.
+* `SUPPLY_ORDER` and `SUPPLY_ITEM` are linked via `SUPPLY_ORDER_ITEM` to track line items, quantities, and actual unit pricing per monthly restock order.
+
+
+* **Omission of Stored Report Entities:** In compliance with database normalization best practices, daily schedule reports, daily billable income reports, and monthly P&L statements were deliberately **not modeled as stored entities**. Instead, all reports are dynamically derivable via SQL aggregate queries:
+* *Daily Schedule:* Filter `APPOINTMENT` by `appointment_datetime` joined with `PATIENT`, `MEDICAL_PROFESSIONAL`, and `ROOM`.
+* *Daily Income:* Sum `fee_charged` from `PATIENT_PROCEDURE` or payments received in `PATIENT_PAYMENT` and `INSURANCE_CLAIM` for a target date.
+* *Monthly P&L / ROI Analytics:* Calculate total revenue (`PATIENT_PAYMENT` + `INSURANCE_CLAIM`) minus total expenses (`PAYROLL_RECORD` + `LEASE_PAYMENT` + `LOAN_PAYMENT` + `OPERATING_EXPENSE` + `SUPPLY_ORDER`).
+
+
+* **Audit and Expense Associations:** Assigned `staff_id` foreign keys to `OPERATING_EXPENSE` and `SUPPLY_ORDER` so overhead spending and inventory purchasing can be traced directly to the staff member who logged or authorized the expense.
+* **Patient Scheduling State:** Modeled `scheduling_state` as an attribute within `PATIENT` constrained to the five specified lifecycle values (`contacted`, `scheduled`, `recently visited`, `up for next visit`, `dormant`), enabling front-office staff to update patient status directly during outreach.
