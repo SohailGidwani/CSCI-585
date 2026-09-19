@@ -141,6 +141,9 @@ a payment have to add up to that payment and not overpay a charge.
 
 FILES
 
+This is what is inside the submission zip. The github repo the files came
+from is organised differently, see README.md there for that layout.
+
 README.txt                                this file
 README.md                                 same content, the diagrams render in it
 ER-diagram-FINAL-gpt6-astra-max.png       the ER diagram I am submitting
@@ -149,4 +152,9 @@ prompt-used.txt                           the prompt I gave GPT-6 and Gemini
 screenshot-ollama-llama3-gemma2.png       prompt and output, local llama3 + gemma2
 screenshot-gpt6-astra-max.png             prompt and output, GPT-6 Astra Max
 comparison/                               the other three models, not my answer
-comparison/prompt-ollama.txt              the prompt I gave llama3 and gemma2:2b
+  prompt-ollama.txt                       the prompt I gave llama3 and gemma2:2b
+  screenshot-gemini-3-6.png               prompt and output, Gemini 3.6 Thinking
+  gemini-3-6-ErDiagram.png / .mmd         Gemini's diagram, second best of the four
+  llama3-ErDiagram-v2.png / .mmd          llama3's second attempt, has 5 orphans
+  gemma2-2b-mermaid-diagram.png           the one render I got out of gemma2:2b
+  raw-outputs/                            what all four models actually replied

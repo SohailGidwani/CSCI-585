@@ -7,25 +7,24 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.env
 .streamlit/secrets.toml
 
-# Build artifact. The submission zip is regenerated from the files in
-# this repo, so there is no reason to version a 1.6M binary.
-HW1_Gidwani.zip
+# Submission zips. Everything that goes into one is tracked here anyway, so
+# there is no point versioning a big binary on top of it.
 *.zip
 
-# Course material that belongs to the professor, not to me. The assignment
-# PDF and everything under spec/ was downloaded from bytes.usc.edu. Keeping
-# my local copies, just not republishing them.
-HW1_ ERD.pdf
+# Course material that belongs to the professor, not to me. Assignment PDFs and
+# anything I mirror off bytes.usc.edu. I keep local copies, I just do not
+# republish them.
 *.pdf
 spec/
 
-# Scratch. These two get overwritten by invokeMultipleLLMs.py on every Send,
-# so they are never a stable record. The outputs I actually kept are the
-# *-output.txt files and the .mmd files.
+# Scratch written by the streamlit app on every Send, in whatever directory you
+# launch it from. Never a stable record. The copies I keep live under
+# HW1/models/.
 last-llama3.txt
 last-gemma2.txt
 
-# Backup of the original app file before I edited it
+# Backups of files from before I edited them
 *.orig
