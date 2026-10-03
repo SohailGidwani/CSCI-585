@@ -1,0 +1,1 @@
+how many patients are scheduled to visit, during the next 3 months?

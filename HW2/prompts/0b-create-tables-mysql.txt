@@ -1,0 +1,1 @@
+Now turn this design into CREATE TABLE statements I can run as-is on TiDB (MySQL-compatible). Include every foreign key column and constraint the relationships need, and order the tables so each one is created after the tables it references. Write all SQL in this chat in MySQL syntax, using exactly these table and column names.

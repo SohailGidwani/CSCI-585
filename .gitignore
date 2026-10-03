@@ -19,6 +19,8 @@ venv/
 # republish them.
 *.pdf
 spec/
+# HW2's first prompt is the HW1 description pasted verbatim, so it is the same text
+HW2/prompts/0-db-description.txt
 
 # Scratch written by the streamlit app on every Send, in whatever directory you
 # launch it from. Never a stable record. The copies I keep live under
